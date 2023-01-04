@@ -1,4 +1,4 @@
-package com.fl0w3r.hydro.ui.theme
+package com.fl0w3r.core.ui.theme
 
 
 import androidx.compose.material.Typography
@@ -8,7 +8,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.fl0w3r.hydro.R
+import com.fl0w3r.core.ui.R
+
 
 private val EczarFontFamily = FontFamily(
     Font(R.font.eczar_regular),
@@ -24,7 +25,7 @@ val Typography = Typography(
     defaultFontFamily = RobotoCondensed,
     h1 = TextStyle(
         fontWeight = FontWeight.W100,
-        fontSize = 96.sp,       // TODO Perhaps set this to 86? Looks weird on the login screen.
+        fontSize = 76.sp,
     ),
     h2 = TextStyle(
         fontWeight = FontWeight.SemiBold,

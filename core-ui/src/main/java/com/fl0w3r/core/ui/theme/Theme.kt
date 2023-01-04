@@ -1,4 +1,4 @@
-package com.fl0w3r.hydro.ui.theme
+package com.fl0w3r.core.ui.theme
 
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable

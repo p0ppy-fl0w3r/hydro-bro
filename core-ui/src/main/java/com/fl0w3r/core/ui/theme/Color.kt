@@ -1,4 +1,4 @@
-package com.fl0w3r.hydro.ui.theme
+package com.fl0w3r.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material.darkColors
