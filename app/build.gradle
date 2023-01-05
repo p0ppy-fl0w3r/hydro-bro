@@ -74,5 +74,11 @@ dependencies {
     // Core UI module for theme, color and typography.
     implementation project(path: ':core-ui')
 
+    // Network module for making api calls.
+    implementation project(path: ':network')
+
+    // Datastore for storing tokens.
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
+
 
 }
