@@ -16,11 +16,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.fl0w3r.core.ui.theme.HydroTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @Composable
-fun ProfileScreen(modifier: Modifier = Modifier, onLogout: () -> Unit) {
-    ProfileBody(modifier = modifier, onLogout = { onLogout() })
+fun ProfileScreen(
+    onLogout: () -> Unit,
+    modifier: Modifier = Modifier,
+    profileViewModel: ProfileViewModel = hiltViewModel()
+) {
+    ProfileBody(modifier = modifier, onLogout = {
+        runBlocking {
+            // Make sure that the token is cleared from the datastore before doing other logout logic.
+            profileViewModel.clearToken()
+            onLogout()
+        }
+    })
 }
 
 @Composable

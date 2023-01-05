@@ -46,7 +46,7 @@ class LoginViewModel @Inject constructor(private val hydroPreferenceRepository: 
                     _tokenState.value = TokenState(
                         validity = if (it.isNotEmpty()) TokenValid.INVALID else TokenValid.FRESH_LOGIN,
                         token = "",
-                        errorMessage = "Failed to login!"
+                        errorMessage = if (it.isNotEmpty())  "Failed to login!" else ""
                     )
                 }
             }
@@ -60,17 +60,22 @@ class LoginViewModel @Inject constructor(private val hydroPreferenceRepository: 
     }
 
     fun authenticateUser(loginModel: LoginModel) {
-        try {
-            val token = apiService.getToken(loginModel)
-            _tokenState.value = TokenState(
-                validity = TokenValid.FROM_API, token = token
-            )
-        } catch (e: IllegalArgumentException) {
-            _tokenState.value = TokenState(
-                validity = TokenValid.INVALID, token = "", errorMessage = e.message.toString()
-            )
+        viewModelScope.launch {
+            try {
+                val token = apiService.getToken(loginModel)
+                _tokenState.value = TokenState(
+                    validity = TokenValid.FROM_API, token = token
+                )
+            } catch (e: IllegalArgumentException) {
+                _tokenState.value = TokenState(
+                    validity = TokenValid.INVALID, token = "", errorMessage = e.message.toString()
+                )
+            }
         }
+    }
 
+    fun resetErrorMessage(tokenState: TokenState) {
+        _tokenState.value = tokenState.copy(errorMessage = "")
     }
 
 }

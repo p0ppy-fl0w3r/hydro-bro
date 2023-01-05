@@ -25,7 +25,6 @@ object DataStoreModule {
 
     private const val HYDRO_PREFERENCES = "hydro_preferences"
 
-
     @Singleton
     @Provides
     fun providesPreferenceDatastore(@ApplicationContext context: Context): DataStore<Preferences> {

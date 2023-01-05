@@ -1,5 +1,6 @@
 package com.fl0w3r.user.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
@@ -40,7 +43,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fl0w3r.core.ui.theme.HydroTheme
 import com.fl0w3r.model.LoginModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fl0w3r.user.ui.login.state.TokenState
 import com.fl0w3r.user.ui.login.state.TokenValid
 
@@ -48,7 +50,7 @@ import com.fl0w3r.user.ui.login.state.TokenValid
 fun LoginScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
-    onLoginUser: (String) -> Unit
+    onLoginUser: () -> Unit
 ) {
 
     val tokenState by viewModel.tokenState.observeAsState(
@@ -56,37 +58,39 @@ fun LoginScreen(
             validity = TokenValid.AWAITING_VALIDITY, token = "", errorMessage = ""
         )
     )
-    var errorMessage by remember {
-        mutableStateOf("")
-    }
 
-    if (tokenState.validity != TokenValid.AWAITING_VALIDITY) {
+    if (tokenState.validity != TokenValid.AWAITING_VALIDITY && tokenState.validity != TokenValid.FRESH_LOGIN) {
         if (tokenState.validity != TokenValid.INVALID) {
             LaunchedEffect(tokenState) {
                 if (tokenState.validity != TokenValid.FROM_STORE) {
                     // Update the token in datastore with the one we got from api.
                     viewModel.updateCurrentToken(tokenState.token)
                 }
-                onLoginUser(tokenState.token)
+                onLoginUser()
             }
-        } else {
-            errorMessage = tokenState.errorMessage
         }
     }
 
-    if (tokenState.validity == TokenValid.AWAITING_VALIDITY) {
+
+    if (tokenState.validity == TokenValid.AWAITING_VALIDITY || (tokenState.validity != TokenValid.FRESH_LOGIN && tokenState.validity != TokenValid.INVALID)) {
+        // Show this message if we waiting for the network to send api request or if we've gotten a response
+        // and are waiting to be logged in
         Text(text = "Please wait...")
     } else {
         LoginBody(modifier = modifier, onLoginClick = {
+            viewModel.resetErrorMessage(tokenState)
             viewModel.authenticateUser(it)
-        }, errorMessage = errorMessage)
+        }, errorMessage = tokenState.errorMessage)
     }
 }
 
 @Composable
 fun LoginBody(
-    modifier: Modifier = Modifier, onLoginClick: (LoginModel) -> Unit, errorMessage: String
+    modifier: Modifier = Modifier,
+    onLoginClick: (LoginModel) -> Unit,
+    errorMessage: String,
 ) {
+    Log.e("The message", errorMessage)
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         DecorationBox()
 
@@ -127,11 +131,17 @@ fun DecorationBox(modifier: Modifier = Modifier, isEnd: Boolean = false) {
 
 @Composable
 fun InputSection(
-    modifier: Modifier = Modifier, onLoginClick: (LoginModel) -> Unit, errorMessage: String
+    modifier: Modifier = Modifier,
+    onLoginClick: (LoginModel) -> Unit,
+    errorMessage: String,
 ) {
 
     var loginModelState by remember {
         mutableStateOf(LoginModel())
+    }
+
+    var showSpinner by remember {
+        mutableStateOf(false)
     }
 
     Column(modifier = modifier.fillMaxWidth()) {
@@ -169,6 +179,9 @@ fun InputSection(
             )
 
             if (errorMessage.isNotEmpty()) {
+                showSpinner = false
+                Log.e("Down", errorMessage)
+                Log.e("Spinner", "$showSpinner")
                 Text(
                     text = errorMessage,
                     color = MaterialTheme.colors.error,
@@ -176,7 +189,7 @@ fun InputSection(
                     fontStyle = FontStyle.Italic
                 )
             }
-
+            Log.e("Out", "$showSpinner")
 
             Row(
                 modifier = modifier
@@ -203,13 +216,26 @@ fun InputSection(
 
             Button(
                 onClick = {
+                    showSpinner = true
                     onLoginClick(loginModelState)
                 },
 
                 ) {
-                Text(
-                    text = "Login", modifier = Modifier.padding(horizontal = 64.dp, vertical = 4.dp)
-                )
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Login",
+                        modifier = Modifier.padding(horizontal = 64.dp, vertical = 4.dp)
+                    )
+                    if (showSpinner) {
+                        LinearProgressIndicator(
+                            color = MaterialTheme.colors.primaryVariant,
+                            modifier = Modifier.width(190.dp)
+                        )
+                    }
+                }
             }
         }
     }
