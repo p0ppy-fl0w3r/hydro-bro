@@ -2,44 +2,58 @@ package com.fl0w3r.hydro
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import com.fl0w3r.user.ui.login.Login
+import androidx.navigation.NavOptions
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.fl0w3r.core.hydro.ui.HydroScreen
+import com.fl0w3r.core.hydro.ui.HydroTabRow
 import com.fl0w3r.core.ui.theme.HydroTheme
 import com.fl0w3r.hydro.datastore.HydroPreferences
-import com.fl0w3r.user.ui.login.LoginScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import com.fl0w3r.hydro.navigation.HydroNavHost
 
 class MainActivity : ComponentActivity() {
 
-    private val hydroPreferences = HydroPreferences(this)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            val context = LocalContext.current
 
-            HydroTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                ) {
-                    LoginScreen(onLoginUser = {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            // Save the token in a datastore so that the user won't have to enter their
-                            // credentials everytime they open their app.
-                            hydroPreferences.updateToken(it)
-                        }
-                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-                    })
+        setContent {
+            HydroApp()
+        }
+    }
+}
+
+@Composable
+fun HydroApp() {
+
+    val navController = rememberNavController()
+    val backstackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = backstackEntry.value?.destination?.route
+
+
+    HydroTheme {
+        Scaffold(
+            bottomBar = {
+                // Only show the top bar if you're not in login screen.
+                if (currentRoute != "login") {
+                    val currentScreen = HydroScreen.fromRoute(currentRoute)
+                    HydroTabRow(
+                        allScreens = HydroScreen.values().toList(), onTabSelected = {
+                            navController.navigate(it.name)
+
+                        }, currentScreen = currentScreen
+                    )
                 }
-            }
+            },
+        ) { padding ->
+            HydroNavHost(
+                navController = navController, modifier = Modifier.padding(padding)
+            )
         }
     }
 }
