@@ -1,24 +1,22 @@
 package com.fl0w3r.hydro
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavOptions
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.fl0w3r.core.hydro.ui.HydroScreen
 import com.fl0w3r.core.hydro.ui.HydroTabRow
 import com.fl0w3r.core.ui.theme.HydroTheme
-import com.fl0w3r.hydro.datastore.HydroPreferences
 import com.fl0w3r.hydro.navigation.HydroNavHost
+import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : ComponentActivity() {
-
+@AndroidEntryPoint
+class MainActivity() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -52,7 +50,8 @@ fun HydroApp() {
             },
         ) { padding ->
             HydroNavHost(
-                navController = navController, modifier = Modifier.padding(padding)
+                navController = navController,
+                modifier = Modifier.padding(padding),
             )
         }
     }

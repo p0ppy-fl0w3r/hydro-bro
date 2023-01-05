@@ -37,42 +37,55 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.fl0w3r.core.ui.theme.HydroTheme
 import com.fl0w3r.model.LoginModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fl0w3r.user.ui.login.state.TokenState
+import com.fl0w3r.user.ui.login.state.TokenValid
 
 @Composable
 fun LoginScreen(
     modifier: Modifier = Modifier,
-    viewModel: LoginViewModel = viewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
     onLoginUser: (String) -> Unit
 ) {
 
-    val tokenState by viewModel.tokenState.observeAsState(null)
+    val tokenState by viewModel.tokenState.observeAsState(
+        TokenState(
+            validity = TokenValid.AWAITING_VALIDITY, token = "", errorMessage = ""
+        )
+    )
     var errorMessage by remember {
         mutableStateOf("")
     }
 
-    tokenState?.let {
-        if (it.isValid) {
+    if (tokenState.validity != TokenValid.AWAITING_VALIDITY) {
+        if (tokenState.validity != TokenValid.INVALID) {
             LaunchedEffect(tokenState) {
-                onLoginUser(it.token)
+                if (tokenState.validity != TokenValid.FROM_STORE) {
+                    // Update the token in datastore with the one we got from api.
+                    viewModel.updateCurrentToken(tokenState.token)
+                }
+                onLoginUser(tokenState.token)
             }
         } else {
-            errorMessage = it.errorMessage
+            errorMessage = tokenState.errorMessage
         }
     }
 
-    LoginBody(modifier = modifier, onLoginClick = {
-        viewModel.authenticateUser(it)
-    }, errorMessage = errorMessage)
+    if (tokenState.validity == TokenValid.AWAITING_VALIDITY) {
+        Text(text = "Please wait...")
+    } else {
+        LoginBody(modifier = modifier, onLoginClick = {
+            viewModel.authenticateUser(it)
+        }, errorMessage = errorMessage)
+    }
 }
 
 @Composable
 fun LoginBody(
-    modifier: Modifier = Modifier,
-    onLoginClick: (LoginModel) -> Unit,
-    errorMessage: String
+    modifier: Modifier = Modifier, onLoginClick: (LoginModel) -> Unit, errorMessage: String
 ) {
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         DecorationBox()

@@ -16,11 +16,13 @@ import com.fl0w3r.user.ui.login.LoginScreen
 fun HydroNavHost(
     navController: NavHostController, modifier: Modifier = Modifier
 ) {
+
     NavHost(
         navController = navController, startDestination = "login", modifier = modifier
     ) {
         composable("login") {
             LoginScreen(onLoginUser = {
+
                 navController.navigate(HydroScreen.Overview.name) {
                     // Prevent navigating back to login screen if the user presses back button.
                     popUpTo(0)
@@ -36,7 +38,13 @@ fun HydroNavHost(
             AlarmScreen()
         }
         composable(HydroScreen.Profile.name) {
-            ProfileScreen()
+            ProfileScreen(onLogout = {
+
+                navController.navigate("login") {
+                    popUpTo(0)
+                }
+
+            })
         }
     }
 }
