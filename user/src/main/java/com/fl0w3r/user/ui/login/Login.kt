@@ -20,6 +20,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -55,19 +55,25 @@ fun LoginScreen(
 
     tokenState?.let {
         if (it.isValid) {
-            onLoginUser(it.token)
+            LaunchedEffect(tokenState) {
+                onLoginUser(it.token)
+            }
         } else {
             errorMessage = it.errorMessage
         }
     }
 
-    Login(modifier = modifier, onLoginClick = {
+    LoginBody(modifier = modifier, onLoginClick = {
         viewModel.authenticateUser(it)
     }, errorMessage = errorMessage)
 }
 
 @Composable
-fun Login(modifier: Modifier = Modifier, onLoginClick: (LoginModel) -> Unit, errorMessage: String) {
+fun LoginBody(
+    modifier: Modifier = Modifier,
+    onLoginClick: (LoginModel) -> Unit,
+    errorMessage: String
+) {
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         DecorationBox()
 
@@ -202,7 +208,7 @@ fun LoginScreenPreview() {
 
     HydroTheme {
         Surface() {
-            Login(onLoginClick = {}, errorMessage = "Apples")
+            LoginBody(onLoginClick = {}, errorMessage = "Apples")
         }
     }
 

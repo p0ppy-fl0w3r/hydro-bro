@@ -1,23 +1,25 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
 
 android {
-    namespace 'com.fl0w3r.hydro'
+    namespace 'com.fl0w3r.core.hydro'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.fl0w3r.hydro"
         minSdk 29
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary true
-        }
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.4.0-alpha02'
     }
 
     buildTypes {
@@ -33,17 +35,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    buildFeatures {
-        compose true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.4.0-alpha02'
-    }
-    packagingOptions {
-        resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}'
-        }
-    }
 }
 
 dependencies {
@@ -56,6 +47,7 @@ dependencies {
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.core:core-ktx:1.9.0'
+    implementation project(path: ':network')
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -68,19 +60,15 @@ dependencies {
     implementation "androidx.compose.material:material"
     implementation "androidx.compose.material:material-icons-extended"
 
+
     // Core UI module for theme, color and typography.
     implementation project(path: ':core-ui')
-    // User module for login and user management
-    implementation project(path: ':user')
-    // Core hydro module for rest of the app's ui.
-    implementation project(path: ':core-hydro')
 
-    // Datastore for storing tokens.
-    implementation "androidx.datastore:datastore-preferences:1.0.0"
+    implementation project(path: ':model')
 
-    // Navigation
-    implementation "androidx.navigation:navigation-compose:2.6.0-alpha04"
-
-
-
+    // ViewModel
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
+    implementation 'androidx.compose.runtime:runtime-livedata:1.4.0-alpha03'
 }
