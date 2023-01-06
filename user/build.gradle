@@ -69,6 +69,7 @@ dependencies {
     implementation project(path: ':core-ui')
 
     implementation project(path: ':core-data')
+    implementation project(path: ':model')
 
     // ViewModel
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'

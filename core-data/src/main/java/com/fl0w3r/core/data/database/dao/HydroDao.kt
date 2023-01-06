@@ -30,6 +30,9 @@ interface HydroDao {
     @Query("SELECT * FROM User")
     suspend fun getAllUsers(): List<User>
 
+    @Query("SELECT * FROM User WHERE userId=:userId")
+    suspend fun getUser(userId: Int): User
+
     @Query("DELETE FROM User")
     suspend fun deleteAllUsers()
 

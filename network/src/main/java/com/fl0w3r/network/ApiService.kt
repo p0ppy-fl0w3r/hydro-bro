@@ -12,7 +12,7 @@ class ApiService {
     }
 
     suspend fun getToken(username: String, password: String): UserResponse {
-        if (password == "cat" && username == "cat") {
+        if (password == "cat" && username == "Cat42069") {
             delay(3000)
 
             return UserResponse(
