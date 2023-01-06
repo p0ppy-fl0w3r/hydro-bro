@@ -25,4 +25,20 @@ class AlarmInfoViewModel @Inject constructor(private val database: HydroDatabase
             }
         }
     }
+
+    fun onAlarmItemChanged(alarmItem: ScheduledAlarm) {
+        _alarmItem.value = alarmItem
+    }
+
+    fun deleteAlarm(alarmId: Int) {
+        viewModelScope.launch {
+            database.hydroDao.deleteAlarm(alarmId)
+        }
+    }
+
+    fun saveAlarm(alarmItem: ScheduledAlarm) {
+        viewModelScope.launch {
+            database.hydroDao.updateAlarm(alarmItem)
+        }
+    }
 }

@@ -51,7 +51,9 @@ fun HydroNavHost(
 
             val alarmId = entry.arguments?.getInt("alarmId")
             alarmId?.let {
-                AlarmInfoScreen(alarmId = it)
+                AlarmInfoScreen(alarmId = it, onCompleteUpdate = {
+                    navController.navigate(HydroScreen.Alarms.name)
+                })
             }
         }
         composable(HydroScreen.Profile.name) {

@@ -17,8 +17,8 @@ interface HydroDao {
     @Update
     suspend fun updateAlarm(scheduledAlarm: ScheduledAlarm)
 
-    @Delete
-    suspend fun deleteAlarm(scheduledAlarm: ScheduledAlarm)
+    @Query("DELETE FROM ScheduledAlarm WHERE alarmId=:alarmId")
+    suspend fun deleteAlarm(alarmId: Int)
 
     @Query("SELECT * FROM ScheduledAlarm WHERE alarmId=:alarmId")
     suspend fun getAlarm(alarmId: Int): ScheduledAlarm

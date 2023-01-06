@@ -37,6 +37,7 @@ import java.util.Date
 @Composable
 fun AlarmInfoScreen(
     alarmId: Int,
+    onCompleteUpdate: () -> Unit,
     modifier: Modifier = Modifier,
     infoViewModel: AlarmInfoViewModel = hiltViewModel(),
 ) {
@@ -44,14 +45,30 @@ fun AlarmInfoScreen(
     infoViewModel.getAlarmItem(alarmId)
 
     if (alarmItem != null) {
-        AlarmInfoBody(modifier = modifier, alarmItem = alarmItem!!)
+        AlarmInfoBody(modifier = modifier, alarmItem = alarmItem!!, onAlarmItemChanged = {
+            infoViewModel.onAlarmItemChanged(it)
+        }, onDeleteClicked = {
+            infoViewModel.deleteAlarm(it)
+            onCompleteUpdate()
+        }, onSaveClicked = {
+            infoViewModel.saveAlarm(it)
+            onCompleteUpdate()
+        })
     }
 }
 
 @Composable
-fun AlarmInfoBody(alarmItem: ScheduledAlarm, modifier: Modifier = Modifier) {
+fun AlarmInfoBody(
+    alarmItem: ScheduledAlarm,
+    onAlarmItemChanged: (ScheduledAlarm) -> Unit,
+    onSaveClicked: (ScheduledAlarm) -> Unit,
+    onDeleteClicked: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
-        TextField(value = "", onValueChange = {}, label = {
+        TextField(value = alarmItem.remarks, onValueChange = {
+            onAlarmItemChanged(alarmItem.copy(remarks = it))
+        }, label = {
             Text(text = "Remarks")
         }, modifier = Modifier
             .fillMaxWidth()
@@ -65,7 +82,9 @@ fun AlarmInfoBody(alarmItem: ScheduledAlarm, modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)
         ) {
             Text(text = "Recurring:")
-            Switch(checked = false, onCheckedChange = {})
+            Switch(checked = alarmItem.recurring, onCheckedChange = {
+                onAlarmItemChanged(alarmItem.copy(recurring = it))
+            })
         }
         Text(
             text = "Should the app remind you of your water intake daily for this alarm?",
@@ -80,7 +99,8 @@ fun AlarmInfoBody(alarmItem: ScheduledAlarm, modifier: Modifier = Modifier) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
 
             Button(
-                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                onClick = { onDeleteClicked(alarmItem.alarmId) },
+                colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.colors.error
                 )
             ) {
@@ -88,7 +108,7 @@ fun AlarmInfoBody(alarmItem: ScheduledAlarm, modifier: Modifier = Modifier) {
                 Text(text = "Delete")
             }
             Spacer(modifier = Modifier.width(16.dp))
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = { onSaveClicked(alarmItem) }) {
                 Icon(imageVector = Icons.Default.SaveAs, contentDescription = null)
                 Text(text = "Save")
             }
@@ -103,15 +123,15 @@ fun AlarmInfoBody(alarmItem: ScheduledAlarm, modifier: Modifier = Modifier) {
 fun AlarmInfoPreview() {
     HydroTheme {
         Surface() {
-            AlarmInfoBody(
-                alarmItem = ScheduledAlarm(
-                    alarmId = 1,
-                    remarks = "Drink 10 ltrs of water.",
-                    time = Date(),
-                    createdBy = 1,
-                    recurring = false
-                )
-            )
+            AlarmInfoBody(alarmItem = ScheduledAlarm(
+                alarmId = 1,
+                remarks = "Drink 10 ltrs of water.",
+                time = Date(),
+                createdBy = 1,
+                recurring = false
+            ), onAlarmItemChanged = {},
+                onSaveClicked = {},
+                onDeleteClicked = {})
         }
 
     }
