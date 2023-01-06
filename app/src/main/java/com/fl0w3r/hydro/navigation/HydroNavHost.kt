@@ -3,10 +3,13 @@ package com.fl0w3r.hydro.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.fl0w3r.core.hydro.ui.HydroScreen
 import com.fl0w3r.core.hydro.ui.alarm.AlarmScreen
+import com.fl0w3r.core.hydro.ui.alarm.info.AlarmInfoScreen
 import com.fl0w3r.core.hydro.ui.overview.OverviewScreen
 import com.fl0w3r.core.hydro.ui.profile.ProfileScreen
 import com.fl0w3r.user.ui.login.LoginScreen
@@ -35,7 +38,21 @@ fun HydroNavHost(
             OverviewScreen()
         }
         composable(HydroScreen.Alarms.name) {
-            AlarmScreen()
+            AlarmScreen(onAlarmClicked = {
+                navigateToAlarmInfo(navController, it)
+            })
+        }
+        composable(
+            route = "${HydroScreen.Alarms.name}/{alarmId}",
+            arguments = listOf(navArgument(name = "alarmId") {
+                type = NavType.IntType
+            })
+        ) { entry ->
+
+            val alarmId = entry.arguments?.getInt("alarmId")
+            alarmId?.let {
+                AlarmInfoScreen(alarmId = it)
+            }
         }
         composable(HydroScreen.Profile.name) {
             ProfileScreen(onLogout = {
@@ -47,4 +64,8 @@ fun HydroNavHost(
             })
         }
     }
+}
+
+private fun navigateToAlarmInfo(navController: NavHostController, alarmId: Int) {
+    navController.navigate("${HydroScreen.Alarms}/$alarmId")
 }

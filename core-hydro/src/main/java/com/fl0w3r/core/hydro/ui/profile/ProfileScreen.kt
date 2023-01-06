@@ -123,6 +123,7 @@ fun UserInfo(profileUiState: ProfileUiState, modifier: Modifier = Modifier) {
             tint = Color(0xFF1EB980),
             iconPadding = 4.dp
         )
+
     }
 }
 

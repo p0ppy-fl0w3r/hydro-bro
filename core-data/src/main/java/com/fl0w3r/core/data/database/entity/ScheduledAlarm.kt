@@ -11,7 +11,7 @@ import java.util.Date
     )]
 )
 data class ScheduledAlarm(
-    @PrimaryKey val alarmId: String,
+    @PrimaryKey(autoGenerate = true) val alarmId: Int = 0,
     val remarks: String,
     val time: Date,
     val createdBy: Int,

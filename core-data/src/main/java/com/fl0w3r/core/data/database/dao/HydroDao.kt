@@ -20,8 +20,8 @@ interface HydroDao {
     @Delete
     suspend fun deleteAlarm(scheduledAlarm: ScheduledAlarm)
 
-    @Query("SELECT * FROM ScheduledAlarm")
-    suspend fun getAllAlarms(): List<ScheduledAlarm>
+    @Query("SELECT * FROM ScheduledAlarm WHERE alarmId=:alarmId")
+    suspend fun getAlarm(alarmId: Int): ScheduledAlarm
 
     @Query("SELECT * FROM ScheduledAlarm WHERE createdBy=:userId")
     suspend fun getAllAlarms(userId: Int): List<ScheduledAlarm>
