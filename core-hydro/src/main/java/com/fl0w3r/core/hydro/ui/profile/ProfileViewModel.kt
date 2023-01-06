@@ -1,14 +1,12 @@
 package com.fl0w3r.core.hydro.ui.profile
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.fl0w3r.core.data.datastore.HydroPreferenceRepositiry
+import com.fl0w3r.core.data.datastore.HydroPreferenceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(private val hydroPreferenceRepository: HydroPreferenceRepositiry) :
+class ProfileViewModel @Inject constructor(private val hydroPreferenceRepository: HydroPreferenceRepository) :
     ViewModel() {
 
     suspend fun clearToken() {

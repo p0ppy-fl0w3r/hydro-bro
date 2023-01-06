@@ -1,9 +1,7 @@
 package com.fl0w3r.network
 
-import com.fl0w3r.model.LoginModel
-import kotlinx.coroutines.Dispatchers
+import com.fl0w3r.model.UserResponse
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 
 class ApiService {
     // TODO Implement api.
@@ -13,11 +11,15 @@ class ApiService {
         return token.isNotEmpty()
     }
 
-    suspend fun getToken(loginModel: LoginModel): String {
-        if (loginModel.password == "cat" && loginModel.username == "cat") {
+    suspend fun getToken(username: String, password: String): UserResponse {
+        if (password == "cat" && username == "cat") {
             delay(3000)
 
-            return "apple";
+            return UserResponse(
+                userId = 1,
+                username = "cat",
+                token = "catToken"
+            )
         }
 
         delay(1000)

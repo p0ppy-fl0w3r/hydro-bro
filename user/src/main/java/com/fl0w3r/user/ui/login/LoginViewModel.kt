@@ -1,12 +1,12 @@
 package com.fl0w3r.user.ui.login
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fl0w3r.core.data.datastore.HydroPreferenceRepositiry
-import com.fl0w3r.model.LoginModel
+import com.fl0w3r.core.data.database.HydroDatabase
+import com.fl0w3r.core.data.datastore.HydroPreferenceRepository
+import com.fl0w3r.core.data.model.LoginModel
 import com.fl0w3r.network.ApiService
 import com.fl0w3r.user.ui.login.state.TokenState
 import com.fl0w3r.user.ui.login.state.TokenValid
@@ -17,8 +17,10 @@ import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(private val hydroPreferenceRepository: HydroPreferenceRepositiry) :
-    ViewModel() {
+class LoginViewModel @Inject constructor(
+    private val hydroPreferenceRepository: HydroPreferenceRepository,
+    private val database: HydroDatabase
+) : ViewModel() {
 
     private val _tokenState = MutableLiveData<TokenState>()
     val tokenState: LiveData<TokenState>
@@ -28,7 +30,6 @@ class LoginViewModel @Inject constructor(private val hydroPreferenceRepository: 
 
     init {
         checkTokenValidity()
-
     }
 
     private fun checkTokenValidity() {
@@ -46,26 +47,26 @@ class LoginViewModel @Inject constructor(private val hydroPreferenceRepository: 
                     _tokenState.value = TokenState(
                         validity = if (it.isNotEmpty()) TokenValid.INVALID else TokenValid.FRESH_LOGIN,
                         token = "",
-                        errorMessage = if (it.isNotEmpty())  "Failed to login!" else ""
+                        errorMessage = if (it.isNotEmpty()) "Failed to login!" else ""
                     )
                 }
             }
         }
     }
 
-    fun updateCurrentToken(token: String) {
-        viewModelScope.launch {
-            hydroPreferenceRepository.updateToken(token)
-        }
-    }
-
     fun authenticateUser(loginModel: LoginModel) {
         viewModelScope.launch {
             try {
-                val token = apiService.getToken(loginModel)
+                val userResponse = apiService.getToken(loginModel.username, loginModel.password)
+
+                hydroPreferenceRepository.updateUser(userResponse.userId)
+
                 _tokenState.value = TokenState(
-                    validity = TokenValid.FROM_API, token = token
+                    validity = TokenValid.FROM_API, token = userResponse.token
                 )
+
+                hydroPreferenceRepository.updateToken(userResponse.token)
+
             } catch (e: IllegalArgumentException) {
                 _tokenState.value = TokenState(
                     validity = TokenValid.INVALID, token = "", errorMessage = e.message.toString()

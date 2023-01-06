@@ -14,9 +14,9 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Hydro Bro"
 include ':app'
-include ':model'
 include ':user'
 include ':core-ui'
 include ':network'
 include ':core-hydro'
 include ':core-data'
+include ':model'

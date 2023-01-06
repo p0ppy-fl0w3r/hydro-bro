@@ -1,6 +1,5 @@
 package com.fl0w3r.user.ui.login
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fl0w3r.core.ui.theme.HydroTheme
-import com.fl0w3r.model.LoginModel
+import com.fl0w3r.core.data.model.LoginModel
 import com.fl0w3r.user.ui.login.state.TokenState
 import com.fl0w3r.user.ui.login.state.TokenValid
 
@@ -62,10 +61,6 @@ fun LoginScreen(
     if (tokenState.validity != TokenValid.AWAITING_VALIDITY && tokenState.validity != TokenValid.FRESH_LOGIN) {
         if (tokenState.validity != TokenValid.INVALID) {
             LaunchedEffect(tokenState) {
-                if (tokenState.validity != TokenValid.FROM_STORE) {
-                    // Update the token in datastore with the one we got from api.
-                    viewModel.updateCurrentToken(tokenState.token)
-                }
                 onLoginUser()
             }
         }
@@ -90,7 +85,6 @@ fun LoginBody(
     onLoginClick: (LoginModel) -> Unit,
     errorMessage: String,
 ) {
-    Log.e("The message", errorMessage)
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         DecorationBox()
 
@@ -137,7 +131,7 @@ fun InputSection(
 ) {
 
     var loginModelState by remember {
-        mutableStateOf(LoginModel())
+        mutableStateOf(LoginModel("", ""))
     }
 
     var showSpinner by remember {
@@ -150,7 +144,7 @@ fun InputSection(
             modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            OutlinedTextField(value = loginModelState.username ?: "", onValueChange = {
+            OutlinedTextField(value = loginModelState.username, onValueChange = {
                 loginModelState = loginModelState.copy(
                     username = it
                 )
@@ -162,7 +156,7 @@ fun InputSection(
 
 
             OutlinedTextField(
-                value = loginModelState.password ?: "",
+                value = loginModelState.password,
                 onValueChange = {
                     loginModelState = loginModelState.copy(
                         password = it
@@ -180,8 +174,6 @@ fun InputSection(
 
             if (errorMessage.isNotEmpty()) {
                 showSpinner = false
-                Log.e("Down", errorMessage)
-                Log.e("Spinner", "$showSpinner")
                 Text(
                     text = errorMessage,
                     color = MaterialTheme.colors.error,
@@ -189,7 +181,6 @@ fun InputSection(
                     fontStyle = FontStyle.Italic
                 )
             }
-            Log.e("Out", "$showSpinner")
 
             Row(
                 modifier = modifier
