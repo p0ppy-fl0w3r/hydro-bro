@@ -1,6 +1,5 @@
 package com.fl0w3r.core.hydro.ui.alarm
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,9 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.Date
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.hours
 
 @HiltViewModel
 class AlarmViewModel @Inject constructor(

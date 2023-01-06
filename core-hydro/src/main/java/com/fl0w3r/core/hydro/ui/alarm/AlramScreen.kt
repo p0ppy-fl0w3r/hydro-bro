@@ -1,15 +1,15 @@
 package com.fl0w3r.core.hydro.ui.alarm
 
+import android.Manifest
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.foundation.background
+import android.os.Build
+import android.os.Build.VERSION_CODES
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,8 +24,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AlarmAdd
-import androidx.compose.material.icons.filled.PunchClock
-import androidx.compose.material.icons.filled.SyncLock
 import androidx.compose.material.icons.filled.Watch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,20 +33,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fl0w3r.core.data.database.entity.ScheduledAlarm
 import com.fl0w3r.core.ui.theme.HydroTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockSelection
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+
 
 @Composable
 fun AlarmScreen(
@@ -58,6 +58,7 @@ fun AlarmScreen(
 ) {
     val allAlarms by alarmViewModel.alarmList.observeAsState(listOf())
 
+
     AlarmBody(modifier = modifier, allAlarms = allAlarms, onAddAlarm = { hour, minute, seconds ->
         alarmViewModel.addAlarm(hour, minute, seconds)
     }, onAlarmClicked = {
@@ -65,6 +66,7 @@ fun AlarmScreen(
     })
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AlarmBody(
     modifier: Modifier = Modifier,
@@ -72,6 +74,9 @@ fun AlarmBody(
     onAddAlarm: (Int, Int, Int) -> Unit,
     onAlarmClicked: (Int) -> Unit
 ) {
+    val notificationPermissionState =
+        rememberPermissionState(permission = if (Build.VERSION.SDK_INT == VERSION_CODES.TIRAMISU) Manifest.permission.POST_NOTIFICATIONS else "")
+
 
     var showDialog by remember {
         mutableStateOf(false)
@@ -80,7 +85,11 @@ fun AlarmBody(
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             IconButton(onClick = {
-                showDialog = true
+                if (notificationPermissionState.status.isGranted) {
+                    showDialog = true
+                } else {
+                    notificationPermissionState.launchPermissionRequest()
+                }
             }) {
                 Icon(imageVector = Icons.Default.AlarmAdd, contentDescription = "Add new alarm")
             }
@@ -128,7 +137,8 @@ fun AlarmItem(scheduledAlarm: ScheduledAlarm, modifier: Modifier = Modifier) {
                     contentDescription = null,
                     modifier = Modifier
                         .weight(1f)
-                        .height(77.dp)
+                        .height(77.dp),
+                    tint = if (scheduledAlarm.recurring) MaterialTheme.colors.secondary else MaterialTheme.colors.onSurface
                 )
                 Column(modifier = Modifier.weight(2f)) {
                     Text(
@@ -139,7 +149,8 @@ fun AlarmItem(scheduledAlarm: ScheduledAlarm, modifier: Modifier = Modifier) {
                         text = scheduledAlarm.remarks,
                         style = MaterialTheme.typography.subtitle1,
                         maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.padding(bottom = 8.dp)
                     )
                 }
 
@@ -189,7 +200,7 @@ fun AlarmBodyPreview() {
             remarks = "Drink 10 ltrs of water Drink 10 ltrs of water.Drink 10 ltrs of water.",
             time = Date(),
             createdBy = 1,
-            recurring = false
+            recurring = true
         )
     )
     HydroTheme {

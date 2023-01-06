@@ -1,5 +1,11 @@
 package com.fl0w3r.core.hydro.ui.alarm.info
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,14 +30,21 @@ import androidx.compose.material.icons.filled.SaveAs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fl0w3r.core.data.database.entity.ScheduledAlarm
+import com.fl0w3r.core.hydro.broadcast.AlarmReceiver
 import com.fl0w3r.core.ui.theme.HydroTheme
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 
 @Composable
@@ -41,38 +54,106 @@ fun AlarmInfoScreen(
     modifier: Modifier = Modifier,
     infoViewModel: AlarmInfoViewModel = hiltViewModel(),
 ) {
+
+    val context = LocalContext.current
+
     val alarmItem by infoViewModel.alarmItem.observeAsState()
+    var alarmOnState by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     infoViewModel.getAlarmItem(alarmId)
 
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
+    val alarmIntent = Intent(context, AlarmReceiver::class.java)
+    val pendingIntent = PendingIntent.getBroadcast(
+        context, alarmId, alarmIntent, PendingIntent.FLAG_IMMUTABLE
+    )
+
     if (alarmItem != null) {
-        AlarmInfoBody(modifier = modifier, alarmItem = alarmItem!!, onAlarmItemChanged = {
-            infoViewModel.onAlarmItemChanged(it)
-        }, onDeleteClicked = {
-            infoViewModel.deleteAlarm(it)
-            onCompleteUpdate()
-        }, onSaveClicked = {
-            infoViewModel.saveAlarm(it)
-            onCompleteUpdate()
-        })
+        AlarmInfoBody(modifier = modifier,
+            alarmItem = alarmItem!!,
+            alarmOn = alarmOnState,
+            onAlarmItemChanged = {
+                infoViewModel.onAlarmItemChanged(it)
+            },
+            onDeleteClicked = {
+                infoViewModel.deleteAlarm(it)
+                onCompleteUpdate()
+            },
+            onSaveClicked = {
+                infoViewModel.saveAlarm(it)
+                updateAlarm(
+                    alarmItem!!, alarmOnState, alarmManager!!, pendingIntent
+                )
+                onCompleteUpdate()
+            },
+            onTurnOnChanged = {
+                alarmOnState = it
+
+            })
     }
 }
 
+private fun updateAlarm(
+    alarmItem: ScheduledAlarm,
+    isOn: Boolean,
+    alarmManager: AlarmManager,
+    pendingIntent: PendingIntent
+) {
+    if (isOn) {
+        val alarmCalender = Calendar.getInstance()
+        alarmCalender.time = alarmItem.time
+
+        val calendar: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, alarmCalender.get(Calendar.HOUR_OF_DAY))
+            set(Calendar.MINUTE, alarmCalender.get(Calendar.MINUTE))
+            set(Calendar.SECOND, alarmCalender.get(Calendar.SECOND))
+        }
+
+        if (alarmItem.recurring) {
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+            )
+        } else {
+            alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent
+            )
+        }
+    } else {
+        alarmManager.cancel(pendingIntent)
+    }
+}
+
+@SuppressLint("SimpleDateFormat")
 @Composable
 fun AlarmInfoBody(
     alarmItem: ScheduledAlarm,
     onAlarmItemChanged: (ScheduledAlarm) -> Unit,
     onSaveClicked: (ScheduledAlarm) -> Unit,
     onDeleteClicked: (Int) -> Unit,
+    onTurnOnChanged: (Boolean) -> Unit,
+    alarmOn: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(4.dp)) {
+
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+            Text(
+                text = SimpleDateFormat("hh:mm aa").format(alarmItem.time),
+                style = MaterialTheme.typography.h2
+            )
+        }
+
         TextField(value = alarmItem.remarks, onValueChange = {
             onAlarmItemChanged(alarmItem.copy(remarks = it))
         }, label = {
             Text(text = "Remarks")
-        }, modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp)
+        }, modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -86,8 +167,26 @@ fun AlarmInfoBody(
                 onAlarmItemChanged(alarmItem.copy(recurring = it))
             })
         }
+
         Text(
             text = "Should the app remind you of your water intake daily for this alarm?",
+            style = MaterialTheme.typography.caption,
+            fontStyle = FontStyle.Italic
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+        Divider()
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)
+        ) {
+            Text(text = "Turn on:")
+            Switch(checked = alarmOn, onCheckedChange = {
+                onTurnOnChanged(it)
+            })
+        }
+        Text(
+            text = "Turn the alarm on or off.",
             style = MaterialTheme.typography.caption,
             fontStyle = FontStyle.Italic
         )
@@ -129,9 +228,13 @@ fun AlarmInfoPreview() {
                 time = Date(),
                 createdBy = 1,
                 recurring = false
-            ), onAlarmItemChanged = {},
+            ),
+                onAlarmItemChanged = {},
                 onSaveClicked = {},
-                onDeleteClicked = {})
+                onDeleteClicked = {},
+                onTurnOnChanged = {},
+                alarmOn = false
+            )
         }
 
     }
