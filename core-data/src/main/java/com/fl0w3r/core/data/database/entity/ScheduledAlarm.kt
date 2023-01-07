@@ -7,14 +7,14 @@ import java.util.Date
 
 @Entity(
     foreignKeys = [ForeignKey(
-        entity = User::class, parentColumns = ["userId"], childColumns = ["createdBy"]
+        entity = User::class, parentColumns = ["username"], childColumns = ["createdBy"]
     )]
 )
 data class ScheduledAlarm(
     @PrimaryKey(autoGenerate = true) val alarmId: Int = 0,
     val remarks: String,
     val time: Date,
-    val createdBy: Int,
+    val createdBy: String,
     val recurring: Boolean,
     val isOn: Boolean
 )

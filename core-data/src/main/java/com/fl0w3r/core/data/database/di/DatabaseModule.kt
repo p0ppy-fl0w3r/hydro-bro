@@ -13,15 +13,17 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule{
+object DatabaseModule {
 
     @Provides
     @Singleton
-    fun providesDatabase(@ApplicationContext context: Context): HydroDatabase{
+    fun providesDatabase(@ApplicationContext context: Context): HydroDatabase {
         val builder = Room.databaseBuilder(
             context, HydroDatabase::class.java, "hydro.db",
-        )
-            .createFromAsset("database/data.db")
+        ).fallbackToDestructiveMigration()
+        // TODO Seed data and remove migration.
+
+//            .createFromAsset("database/data.db")
 
         return builder.build()
     }

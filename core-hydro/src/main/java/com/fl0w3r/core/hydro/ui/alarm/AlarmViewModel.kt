@@ -34,9 +34,9 @@ class AlarmViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getAlarmList(userId: Int) {
+    private suspend fun getAlarmList(username: String) {
 
-        val allUserAlarms = database.hydroDao.getAllAlarms(userId)
+        val allUserAlarms = database.hydroDao.getAllAlarms(username)
         _alarmList.value = allUserAlarms
 
     }

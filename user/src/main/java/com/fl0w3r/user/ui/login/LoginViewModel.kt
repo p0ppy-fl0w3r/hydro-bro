@@ -5,15 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fl0w3r.core.data.database.HydroDatabase
+import com.fl0w3r.core.data.database.entity.User
 import com.fl0w3r.core.data.datastore.HydroPreferenceRepository
-import com.fl0w3r.core.data.model.LoginModel
-import com.fl0w3r.network.ApiService
+import com.fl0w3r.model.LoginModel
+import com.fl0w3r.network.HydroApi
 import com.fl0w3r.user.ui.login.state.TokenState
 import com.fl0w3r.user.ui.login.state.TokenValid
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.lang.IllegalArgumentException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +26,7 @@ class LoginViewModel @Inject constructor(
     val tokenState: LiveData<TokenState>
         get() = _tokenState
 
-    private val apiService = ApiService()
+    private val apiService = HydroApi.hydroApiService
 
     init {
         checkTokenValidity()
@@ -36,12 +36,14 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             val currentToken = hydroPreferenceRepository.currentAccessToken
             currentToken.collectLatest {
-                val tokenValid = apiService.isTokenValid(it)
-                if (tokenValid) {
-                    _tokenState.value = TokenState(
-                        validity = TokenValid.FROM_STORE, token = ""
-                    )
-                } else {
+                try {
+                    val tokenValid = apiService.isTokenValid("Bearer $it")
+                    if (tokenValid) {
+                        _tokenState.value = TokenState(
+                            validity = TokenValid.FROM_STORE, token = ""
+                        )
+                    }
+                } catch (e: Exception) {
                     // Token validation failed.
                     // Either the user is logging in for the first time or their token has expired.
                     _tokenState.value = TokenState(
@@ -57,9 +59,19 @@ class LoginViewModel @Inject constructor(
     fun authenticateUser(loginModel: LoginModel) {
         viewModelScope.launch {
             try {
-                val userResponse = apiService.getToken(loginModel.username, loginModel.password)
+                val userResponse = apiService.loginUser(loginModel)
 
-                hydroPreferenceRepository.updateUser(userResponse.userId)
+                database.hydroDao.addUser(
+                    User(
+                        username = userResponse.username,
+                        firstName = userResponse.firstName,
+                        lastName = userResponse.lastName,
+                        age = userResponse.age,
+                        email = userResponse.email
+                    )
+                )
+
+                hydroPreferenceRepository.updateUser(userResponse.username)
 
                 _tokenState.value = TokenState(
                     validity = TokenValid.FROM_API, token = userResponse.token
@@ -67,7 +79,7 @@ class LoginViewModel @Inject constructor(
 
                 hydroPreferenceRepository.updateToken(userResponse.token)
 
-            } catch (e: IllegalArgumentException) {
+            } catch (e: Exception) {
                 _tokenState.value = TokenState(
                     validity = TokenValid.INVALID, token = "", errorMessage = e.message.toString()
                 )

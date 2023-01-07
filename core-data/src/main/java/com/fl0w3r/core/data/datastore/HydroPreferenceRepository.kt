@@ -13,7 +13,7 @@ class HydroPreferenceRepository @Inject constructor(private val dataStore: DataS
 
     private object PreferenceKeys {
         val ACCESS_TOKEN = stringPreferencesKey(name = "access_token")
-        val LOGGED_IN_USER = intPreferencesKey(name = "user_id")
+        val LOGGED_IN_USER = stringPreferencesKey(name = "user_name")
     }
 
     suspend fun updateToken(token: String) {
@@ -25,14 +25,15 @@ class HydroPreferenceRepository @Inject constructor(private val dataStore: DataS
     val currentAccessToken: Flow<String> = dataStore.data.map { preferences ->
         preferences[PreferenceKeys.ACCESS_TOKEN] ?: ""
     }
-    suspend fun updateUser(userId: Int) {
+
+    suspend fun updateUser(username: String) {
         dataStore.edit { preferences ->
-            preferences[PreferenceKeys.LOGGED_IN_USER] = userId
+            preferences[PreferenceKeys.LOGGED_IN_USER] = username
         }
     }
 
-    val loggedInUser: Flow<Int> = dataStore.data.map { preferences ->
-        preferences[PreferenceKeys.LOGGED_IN_USER] ?: -1
+    val loggedInUser: Flow<String> = dataStore.data.map { preferences ->
+        preferences[PreferenceKeys.LOGGED_IN_USER] ?: ""
     }
 
 }

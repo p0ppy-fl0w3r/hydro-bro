@@ -187,7 +187,7 @@ fun AlarmItemPreview() {
                     alarmId = 1,
                     remarks = "Drink 10 ltrs of water.",
                     time = alarmDate,
-                    createdBy = 1,
+                    createdBy = "Mittens",
                     recurring = false,
                     isOn = false
                 )
@@ -210,14 +210,14 @@ fun AlarmBodyPreview() {
             alarmId = 1,
             remarks = "Drink 10 ltrs of water.",
             time = alarmDate,
-            createdBy = 1,
+            createdBy = "Mittens",
             recurring = false,
             isOn = true
         ), ScheduledAlarm(
             alarmId = 2,
             remarks = "Drink 10 ltrs of water Drink 10 ltrs of water.Drink 10 ltrs of water.",
             time = alarmDate,
-            createdBy = 1,
+            createdBy = "Mittens",
             recurring = true,
             isOn = false
         )

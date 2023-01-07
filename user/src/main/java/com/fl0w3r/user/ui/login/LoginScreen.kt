@@ -41,7 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.fl0w3r.core.ui.theme.HydroTheme
-import com.fl0w3r.core.data.model.LoginModel
+import com.fl0w3r.model.LoginModel
 import com.fl0w3r.user.ui.login.state.TokenState
 import com.fl0w3r.user.ui.login.state.TokenValid
 

@@ -3,7 +3,9 @@ package com.fl0w3r.core.data.database.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.fl0w3r.core.data.database.entity.ScheduledAlarm
 import com.fl0w3r.core.data.database.entity.User
@@ -23,20 +25,16 @@ interface HydroDao {
     @Query("SELECT * FROM ScheduledAlarm WHERE alarmId=:alarmId")
     suspend fun getAlarm(alarmId: Int): ScheduledAlarm
 
-    @Query("SELECT * FROM ScheduledAlarm WHERE createdBy=:userId")
-    suspend fun getAllAlarms(userId: Int): List<ScheduledAlarm>
+    @Query("SELECT * FROM ScheduledAlarm WHERE createdBy=:username")
+    suspend fun getAllAlarms(username: String): List<ScheduledAlarm>
 
-    // TODO Get user.
-    @Query("SELECT * FROM User")
-    suspend fun getAllUsers(): List<User>
-
-    @Query("SELECT * FROM User WHERE userId=:userId")
-    suspend fun getUser(userId: Int): User
+    @Query("SELECT * FROM User WHERE username=:username")
+    suspend fun getUser(username: String): User
 
     @Query("DELETE FROM User")
     suspend fun deleteAllUsers()
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addUser(user: User): Long
 
 }

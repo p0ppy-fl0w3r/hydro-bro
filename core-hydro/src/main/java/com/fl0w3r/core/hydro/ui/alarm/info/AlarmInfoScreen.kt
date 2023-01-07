@@ -219,7 +219,7 @@ fun AlarmInfoPreview() {
                     alarmId = 1,
                     remarks = "Drink 10 ltrs of water.",
                     time = Date(),
-                    createdBy = 1,
+                    createdBy = "Mittens",
                     recurring = false,
                     isOn = false
                 ),

@@ -1,28 +1,36 @@
 package com.fl0w3r.network
 
+import com.fl0w3r.model.LoginModel
 import com.fl0w3r.model.UserResponse
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.delay
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.POST
 
-class ApiService {
-    // TODO Implement api.
-    suspend fun isTokenValid(token: String): Boolean {
-        delay(1000)
+private const val BASE_URL = "http://192.168.1.64:5009/"
 
-        return token.isNotEmpty()
-    }
+private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-    suspend fun getToken(username: String, password: String): UserResponse {
-        if (password == "cat" && username == "cat") {
-            delay(3000)
+private val retrofit =
+    Retrofit.Builder().addConverterFactory(MoshiConverterFactory.create(moshi)).baseUrl(BASE_URL)
+        .build()
 
-            return UserResponse(
-                userId = 1,
-                username = "cat",
-                token = "catToken"
-            )
-        }
+interface HydroApiService {
+    @POST("api/Auth/login")
+    suspend fun loginUser(@Body loginModel: LoginModel): UserResponse
 
-        delay(1000)
-        throw IllegalArgumentException("Invalid username or password!!");
+    @GET("api/Auth/verify")
+    suspend fun isTokenValid(@Header("Authorization") token: String): Boolean
+
+}
+
+object HydroApi {
+    val hydroApiService: HydroApiService by lazy {
+        retrofit.create(HydroApiService::class.java)
     }
 }

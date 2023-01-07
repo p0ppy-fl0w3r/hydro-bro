@@ -29,7 +29,6 @@ class ProfileViewModel @Inject constructor(
 
     private fun getUiState() {
         viewModelScope.launch {
-            delay(500)
             hydroPreferenceRepository.loggedInUser.collectLatest {
                 val user = database.hydroDao.getUser(it)
                 _profileUiSate.value = ProfileUiState(
