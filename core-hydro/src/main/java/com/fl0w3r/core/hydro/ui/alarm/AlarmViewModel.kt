@@ -54,7 +54,8 @@ class AlarmViewModel @Inject constructor(
                     remarks = "",
                     time = alarmDate,
                     createdBy = it,
-                    recurring = false
+                    recurring = false,
+                    isOn = false
                 )
                 database.hydroDao.addNewAlarm(scheduledAlarm)
 

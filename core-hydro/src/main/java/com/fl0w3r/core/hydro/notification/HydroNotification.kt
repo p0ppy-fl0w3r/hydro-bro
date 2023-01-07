@@ -12,18 +12,20 @@ fun showNotification(
     channelId: String,
     channelName: String,
     notificationId: Int,
-    contentTitle: String
+    contentTitle: String,
+    contentText: String
 ) {
 
     val notificationBuilder = NotificationCompat.Builder(context, channelId)
-        .setSmallIcon(R.drawable.cat)
+        .setSmallIcon(R.drawable.fitness)
         .setContentTitle(contentTitle)
-        .setContentText("Drink water.")
+        .setContentText(contentText)
         .setPriority(NotificationCompat.PRIORITY_MAX)
         .setCategory(NotificationCompat.CATEGORY_ALARM)
 
     val notification = notificationBuilder.build()
-    val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val notificationManager =
+        context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
 
     notificationManager.createNotificationChannel(

@@ -9,7 +9,7 @@ import com.fl0w3r.core.data.database.entity.User
 
 @Database(
     entities = [User::class, ScheduledAlarm::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 
     )

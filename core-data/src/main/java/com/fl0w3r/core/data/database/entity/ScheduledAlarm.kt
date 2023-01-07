@@ -15,5 +15,6 @@ data class ScheduledAlarm(
     val remarks: String,
     val time: Date,
     val createdBy: Int,
-    val recurring: Boolean
+    val recurring: Boolean,
+    val isOn: Boolean
 )

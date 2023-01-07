@@ -4,18 +4,22 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Build.VERSION_CODES
-import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -111,9 +115,7 @@ fun AlarmBody(
 
 @Composable
 fun AlarmList(
-    allAlarms: List<ScheduledAlarm>,
-    modifier: Modifier = Modifier,
-    onAlarmClicked: (Int) -> Unit
+    allAlarms: List<ScheduledAlarm>, modifier: Modifier = Modifier, onAlarmClicked: (Int) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
         items(allAlarms) {
@@ -130,32 +132,42 @@ fun AlarmList(
 fun AlarmItem(scheduledAlarm: ScheduledAlarm, modifier: Modifier = Modifier) {
     Card() {
 
-        Column(modifier = modifier.fillMaxWidth()) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.Watch,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(77.dp),
-                    tint = if (scheduledAlarm.recurring) MaterialTheme.colors.secondary else MaterialTheme.colors.onSurface
-                )
-                Column(modifier = Modifier.weight(2f)) {
-                    Text(
-                        text = SimpleDateFormat("hh:mm a").format(scheduledAlarm.time),
-                        style = MaterialTheme.typography.h2
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .height(100.dp)
+                    .width(4.dp)
+                    .background(
+                        color = if (scheduledAlarm.isOn) MaterialTheme.colors.secondary else MaterialTheme.colors.error,
+                        shape = CircleShape
                     )
-                    Text(
-                        text = scheduledAlarm.remarks,
-                        style = MaterialTheme.typography.subtitle1,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                }
+            )
 
+            Icon(
+                imageVector = Icons.Default.Watch,
+                contentDescription = null,
+                modifier = Modifier
+                    .weight(0.7f)
+                    .height(77.dp),
+                tint = if (scheduledAlarm.recurring) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface
+            )
+            Column(modifier = Modifier.weight(2f)) {
+                Text(
+                    text = SimpleDateFormat("hh:mm a").format(scheduledAlarm.time),
+                    style = MaterialTheme.typography.h2
+                )
+                Text(
+                    text = scheduledAlarm.remarks,
+                    style = MaterialTheme.typography.subtitle1,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
             }
+
         }
+
     }
 }
 
@@ -176,7 +188,8 @@ fun AlarmItemPreview() {
                     remarks = "Drink 10 ltrs of water.",
                     time = alarmDate,
                     createdBy = 1,
-                    recurring = false
+                    recurring = false,
+                    isOn = false
                 )
             )
         }
@@ -187,20 +200,26 @@ fun AlarmItemPreview() {
 @Composable
 fun AlarmBodyPreview() {
 
+    val alarmCalender = Calendar.getInstance().apply {
+        set(0, 0, 0, 20, 25, 11)
+    }
+    val alarmDate = alarmCalender.time
+
     val listAlarm = listOf(
         ScheduledAlarm(
             alarmId = 1,
             remarks = "Drink 10 ltrs of water.",
-            time = Date(),
+            time = alarmDate,
             createdBy = 1,
-            recurring = false
-        ),
-        ScheduledAlarm(
+            recurring = false,
+            isOn = true
+        ), ScheduledAlarm(
             alarmId = 2,
             remarks = "Drink 10 ltrs of water Drink 10 ltrs of water.Drink 10 ltrs of water.",
-            time = Date(),
+            time = alarmDate,
             createdBy = 1,
-            recurring = true
+            recurring = true,
+            isOn = false
         )
     )
     HydroTheme {

@@ -58,76 +58,29 @@ fun AlarmInfoScreen(
     val context = LocalContext.current
 
     val alarmItem by infoViewModel.alarmItem.observeAsState()
-    var alarmOnState by rememberSaveable {
-        mutableStateOf(false)
-    }
-
+    // Populate the initial alarm data.
     infoViewModel.getAlarmItem(alarmId)
 
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-    val alarmIntent = Intent(context, AlarmReceiver::class.java)
-    val pendingIntent = PendingIntent.getBroadcast(
-        context, alarmId, alarmIntent, PendingIntent.FLAG_IMMUTABLE
-    )
 
     if (alarmItem != null) {
-        AlarmInfoBody(modifier = modifier,
-            alarmItem = alarmItem!!,
-            alarmOn = alarmOnState,
+        AlarmInfoBody(modifier = modifier, alarmItem = alarmItem!!,
+
             onAlarmItemChanged = {
                 infoViewModel.onAlarmItemChanged(it)
-            },
-            onDeleteClicked = {
+            }, onDeleteClicked = {
                 infoViewModel.deleteAlarm(it)
                 onCompleteUpdate()
-            },
-            onSaveClicked = {
+            }, onSaveClicked = {
                 infoViewModel.saveAlarm(it)
                 updateAlarm(
-                    alarmItem!!, alarmOnState, alarmManager!!, pendingIntent
+                    alarmItem!!, alarmManager!!, context
                 )
                 onCompleteUpdate()
-            },
-            onTurnOnChanged = {
-                alarmOnState = it
-
             })
     }
 }
 
-private fun updateAlarm(
-    alarmItem: ScheduledAlarm,
-    isOn: Boolean,
-    alarmManager: AlarmManager,
-    pendingIntent: PendingIntent
-) {
-    if (isOn) {
-        val alarmCalender = Calendar.getInstance()
-        alarmCalender.time = alarmItem.time
-
-        val calendar: Calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, alarmCalender.get(Calendar.HOUR_OF_DAY))
-            set(Calendar.MINUTE, alarmCalender.get(Calendar.MINUTE))
-            set(Calendar.SECOND, alarmCalender.get(Calendar.SECOND))
-        }
-
-        if (alarmItem.recurring) {
-            alarmManager.setRepeating(
-                AlarmManager.RTC_WAKEUP,
-                calendar.timeInMillis,
-                AlarmManager.INTERVAL_DAY,
-                pendingIntent
-            )
-        } else {
-            alarmManager.setExact(
-                AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent
-            )
-        }
-    } else {
-        alarmManager.cancel(pendingIntent)
-    }
-}
 
 @SuppressLint("SimpleDateFormat")
 @Composable
@@ -136,8 +89,6 @@ fun AlarmInfoBody(
     onAlarmItemChanged: (ScheduledAlarm) -> Unit,
     onSaveClicked: (ScheduledAlarm) -> Unit,
     onDeleteClicked: (Int) -> Unit,
-    onTurnOnChanged: (Boolean) -> Unit,
-    alarmOn: Boolean,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.padding(4.dp)) {
@@ -181,8 +132,8 @@ fun AlarmInfoBody(
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(4.dp)
         ) {
             Text(text = "Turn on:")
-            Switch(checked = alarmOn, onCheckedChange = {
-                onTurnOnChanged(it)
+            Switch(checked = alarmItem.isOn, onCheckedChange = {
+                onAlarmItemChanged(alarmItem.copy(isOn = it))
             })
         }
         Text(
@@ -217,23 +168,64 @@ fun AlarmInfoBody(
 }
 
 
+private fun updateAlarm(
+    alarmItem: ScheduledAlarm, alarmManager: AlarmManager, context: Context
+) {
+
+    val alarmIntent = Intent(context, AlarmReceiver::class.java).apply {
+        putExtra("remarks", alarmItem.remarks)
+    }
+    val pendingIntent = PendingIntent.getBroadcast(
+        context, alarmItem.alarmId, alarmIntent, PendingIntent.FLAG_IMMUTABLE
+    )
+
+    // Cancel any previous alarm
+    alarmManager.cancel(pendingIntent)
+
+    if (alarmItem.isOn) {
+
+        val alarmCalender = Calendar.getInstance()
+        alarmCalender.time = alarmItem.time
+
+        val calendar: Calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+            set(Calendar.HOUR_OF_DAY, alarmCalender.get(Calendar.HOUR_OF_DAY))
+            set(Calendar.MINUTE, alarmCalender.get(Calendar.MINUTE))
+            set(Calendar.SECOND, alarmCalender.get(Calendar.SECOND))
+        }
+
+        if (alarmItem.recurring) {
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY,
+                pendingIntent
+            )
+        } else {
+            alarmManager.setExact(
+                AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pendingIntent
+            )
+        }
+    }
+}
+
 @Composable
 @Preview
 fun AlarmInfoPreview() {
     HydroTheme {
         Surface() {
-            AlarmInfoBody(alarmItem = ScheduledAlarm(
-                alarmId = 1,
-                remarks = "Drink 10 ltrs of water.",
-                time = Date(),
-                createdBy = 1,
-                recurring = false
-            ),
+            AlarmInfoBody(
+                alarmItem = ScheduledAlarm(
+                    alarmId = 1,
+                    remarks = "Drink 10 ltrs of water.",
+                    time = Date(),
+                    createdBy = 1,
+                    recurring = false,
+                    isOn = false
+                ),
                 onAlarmItemChanged = {},
                 onSaveClicked = {},
                 onDeleteClicked = {},
-                onTurnOnChanged = {},
-                alarmOn = false
             )
         }
 
