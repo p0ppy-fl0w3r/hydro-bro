@@ -13,6 +13,8 @@ import com.fl0w3r.core.hydro.ui.alarm.info.AlarmInfoScreen
 import com.fl0w3r.core.hydro.ui.overview.OverviewScreen
 import com.fl0w3r.core.hydro.ui.profile.ProfileScreen
 import com.fl0w3r.user.ui.login.LoginScreen
+import com.fl0w3r.user.ui.signup.SignUpPreview
+import com.fl0w3r.user.ui.signup.SignupScreen
 
 
 @Composable
@@ -25,12 +27,18 @@ fun HydroNavHost(
     ) {
         composable("login") {
             LoginScreen(onLoginUser = {
-
                 navController.navigate(HydroScreen.Overview.name) {
                     // Prevent navigating back to login screen if the user presses back button.
                     popUpTo(0)
                 }
-
+            },
+                onSignupClicked = {
+                    navController.navigate("sign_up")
+                })
+        }
+        composable("sign_up") {
+            SignupScreen(onSignupComplete = {
+                navController.navigate("login")
             })
         }
 

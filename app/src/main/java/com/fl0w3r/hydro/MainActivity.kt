@@ -37,8 +37,8 @@ fun HydroApp() {
     HydroTheme {
         Scaffold(
             bottomBar = {
-                // Only show the top bar if you're not in login screen.
-                if (currentRoute != "login") {
+                // Only show the bottom bar if you're not in login or sign up screens.
+                if (currentRoute != "login" && currentRoute != "sign_up") {
                     val currentScreen = HydroScreen.fromRoute(currentRoute)
                     HydroTabRow(
                         allScreens = HydroScreen.values().toList(), onTabSelected = {

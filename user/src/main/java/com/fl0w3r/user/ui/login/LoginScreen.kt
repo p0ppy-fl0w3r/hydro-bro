@@ -49,7 +49,8 @@ import com.fl0w3r.user.ui.login.state.TokenValid
 fun LoginScreen(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = hiltViewModel(),
-    onLoginUser: () -> Unit
+    onLoginUser: () -> Unit,
+    onSignupClicked: () -> Unit
 ) {
 
     val tokenState by viewModel.tokenState.observeAsState(
@@ -75,7 +76,9 @@ fun LoginScreen(
         LoginBody(modifier = modifier, onLoginClick = {
             viewModel.resetErrorMessage(tokenState)
             viewModel.authenticateUser(it)
-        }, errorMessage = tokenState.errorMessage)
+        }, errorMessage = tokenState.errorMessage, onSignupClicked = {
+            onSignupClicked()
+        })
     }
 }
 
@@ -83,6 +86,7 @@ fun LoginScreen(
 fun LoginBody(
     modifier: Modifier = Modifier,
     onLoginClick: (LoginModel) -> Unit,
+    onSignupClicked: () -> Unit,
     errorMessage: String,
 ) {
     Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
@@ -91,7 +95,7 @@ fun LoginBody(
         Text(text = "Hello There!", style = MaterialTheme.typography.h1)
         InputSection(onLoginClick = {
             onLoginClick(it)
-        }, errorMessage = errorMessage)
+        }, errorMessage = errorMessage, onSignupClicked = { onSignupClicked() })
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -127,6 +131,7 @@ fun DecorationBox(modifier: Modifier = Modifier, isEnd: Boolean = false) {
 fun InputSection(
     modifier: Modifier = Modifier,
     onLoginClick: (LoginModel) -> Unit,
+    onSignupClicked: () -> Unit,
     errorMessage: String,
 ) {
 
@@ -201,7 +206,7 @@ fun InputSection(
                 .padding(8.dp)
                 .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            TextButton(onClick = { /*TODO*/ }) {
+            TextButton(onClick = { onSignupClicked() }) {
                 Text(text = "Sign Up", textDecoration = TextDecoration.Underline)
             }
 
@@ -238,7 +243,7 @@ fun LoginScreenPreview() {
 
     HydroTheme {
         Surface() {
-            LoginBody(onLoginClick = {}, errorMessage = "Apples")
+            LoginBody(onLoginClick = {}, errorMessage = "Apples", onSignupClicked = {})
         }
     }
 
