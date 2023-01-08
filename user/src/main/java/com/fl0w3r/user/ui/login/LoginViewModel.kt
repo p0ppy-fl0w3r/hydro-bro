@@ -81,10 +81,15 @@ class LoginViewModel @Inject constructor(
                 hydroPreferenceRepository.updateToken(userResponse.token)
 
             } catch (e: HttpException) {
+                val message = if (e.response()?.code() == 401) {
+                    "Invalid username or password!!"
+                } else {
+                    "Unable to login!"
+                }
                 _tokenState.value = TokenState(
                     validity = TokenValid.INVALID,
                     token = "",
-                    errorMessage = e.response()?.errorBody()?.string().toString()
+                    errorMessage = message
                 )
 
             } catch (e: Exception) {

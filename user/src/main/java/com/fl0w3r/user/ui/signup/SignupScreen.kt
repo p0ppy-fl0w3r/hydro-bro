@@ -323,7 +323,7 @@ fun DecorationBox(modifier: Modifier = Modifier, isEnd: Boolean = false) {
 
 @Preview
 @Composable
-fun SignUpPreview() {
+private fun SignUpPreview() {
 
     val state = SignupState(
         username = "Test",
@@ -344,7 +344,7 @@ fun SignUpPreview() {
     )
 
     HydroTheme {
-        Surface() {
+        Surface {
             SignupBody(
                 signupErrorState = errorState,
                 signupState = state,

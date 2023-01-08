@@ -239,10 +239,10 @@ fun InputSection(
 
 @Preview
 @Composable
-fun LoginScreenPreview() {
+private fun LoginScreenPreview() {
 
     HydroTheme {
-        Surface() {
+        Surface {
             LoginBody(onLoginClick = {}, errorMessage = "Apples", onSignupClicked = {})
         }
     }

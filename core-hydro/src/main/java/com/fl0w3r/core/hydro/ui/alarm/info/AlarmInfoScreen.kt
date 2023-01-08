@@ -5,8 +5,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import android.view.View
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,9 +28,6 @@ import androidx.compose.material.icons.filled.SaveAs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -188,7 +183,6 @@ private fun updateAlarm(
         alarmCalender.time = alarmItem.time
 
         val calendar: Calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
             set(Calendar.HOUR_OF_DAY, alarmCalender.get(Calendar.HOUR_OF_DAY))
             set(Calendar.MINUTE, alarmCalender.get(Calendar.MINUTE))
             set(Calendar.SECOND, alarmCalender.get(Calendar.SECOND))
@@ -213,7 +207,7 @@ private fun updateAlarm(
 @Preview
 fun AlarmInfoPreview() {
     HydroTheme {
-        Surface() {
+        Surface {
             AlarmInfoBody(
                 alarmItem = ScheduledAlarm(
                     alarmId = 1,

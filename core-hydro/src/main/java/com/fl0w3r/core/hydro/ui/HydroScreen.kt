@@ -20,6 +20,10 @@ enum class HydroScreen(
     );
 
     companion object {
+
+        /**
+         * Returns a [HydroScreen] from the provided route string.
+        * */
         fun fromRoute(route: String?): HydroScreen =
             when (route?.substringBefore("/")) {
                 Alarms.name -> Alarms

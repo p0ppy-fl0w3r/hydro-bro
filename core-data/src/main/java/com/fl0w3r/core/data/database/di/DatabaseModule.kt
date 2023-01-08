@@ -2,7 +2,6 @@ package com.fl0w3r.core.data.database.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.fl0w3r.core.data.database.HydroDatabase
 import dagger.Module
 import dagger.Provides
@@ -20,10 +19,7 @@ object DatabaseModule {
     fun providesDatabase(@ApplicationContext context: Context): HydroDatabase {
         val builder = Room.databaseBuilder(
             context, HydroDatabase::class.java, "hydro.db",
-        ).fallbackToDestructiveMigration()
-        // TODO Seed data and remove migration.
-
-//            .createFromAsset("database/data.db")
+        ).createFromAsset("database/data.db")
 
         return builder.build()
     }

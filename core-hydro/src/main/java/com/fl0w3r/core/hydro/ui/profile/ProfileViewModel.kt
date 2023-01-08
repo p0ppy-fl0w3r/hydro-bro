@@ -8,7 +8,6 @@ import com.fl0w3r.core.data.database.HydroDatabase
 import com.fl0w3r.core.data.datastore.HydroPreferenceRepository
 import com.fl0w3r.core.hydro.ui.profile.state.ProfileUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject

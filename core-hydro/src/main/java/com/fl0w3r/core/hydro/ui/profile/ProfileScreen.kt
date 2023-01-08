@@ -22,19 +22,15 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BedroomBaby
 import androidx.compose.material.icons.filled.ChildCare
-import androidx.compose.material.icons.filled.ChildFriendly
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Man
-import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -46,9 +42,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.fl0w3r.core.hydro.R
 import com.fl0w3r.core.hydro.ui.profile.state.ProfileUiState
 import com.fl0w3r.core.ui.theme.HydroTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -158,7 +151,7 @@ fun ProfileHeader(modifier: Modifier = Modifier, onLogout: () -> Unit) {
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             IconButton(onClick = { onLogout() }, modifier = Modifier.padding(end = 8.dp)) {
-                Row() {
+                Row {
                     Icon(
                         imageVector = Icons.Default.Logout,
                         contentDescription = null,
@@ -207,7 +200,7 @@ fun LabeledText(
 
 @Preview
 @Composable
-fun LabeledTextPreview() {
+private fun LabeledTextPreview() {
     HydroTheme {
         Surface {
             LabeledText(
@@ -219,9 +212,9 @@ fun LabeledTextPreview() {
 
 @Preview
 @Composable
-fun ProfileBodyView() {
+private fun ProfileBodyView() {
     HydroTheme {
-        Surface() {
+        Surface {
             ProfileBody(
                 onLogout = {}, profileUiState = ProfileUiState(
                     username = "Cat1234",

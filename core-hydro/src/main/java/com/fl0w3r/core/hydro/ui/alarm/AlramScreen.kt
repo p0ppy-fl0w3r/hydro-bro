@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,7 +50,6 @@ import com.maxkeppeler.sheets.clock.ClockDialog
 import com.maxkeppeler.sheets.clock.models.ClockSelection
 import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
 
 
 @Composable
@@ -134,7 +132,7 @@ fun AlarmList(
 @SuppressLint("SimpleDateFormat")
 @Composable
 fun AlarmItem(scheduledAlarm: ScheduledAlarm, modifier: Modifier = Modifier) {
-    Card() {
+    Card {
 
         Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
             Box(
@@ -177,7 +175,7 @@ fun AlarmItem(scheduledAlarm: ScheduledAlarm, modifier: Modifier = Modifier) {
 
 @Composable
 @Preview
-fun AlarmItemPreview() {
+private fun AlarmItemPreview() {
 
     val alarmCalender = Calendar.getInstance().apply {
         set(0, 0, 0, 20, 25, 11)
@@ -185,7 +183,7 @@ fun AlarmItemPreview() {
     val alarmDate = alarmCalender.time
 
     HydroTheme {
-        Surface() {
+        Surface {
             AlarmItem(
                 scheduledAlarm = ScheduledAlarm(
                     alarmId = 1,
@@ -202,7 +200,7 @@ fun AlarmItemPreview() {
 
 @Preview
 @Composable
-fun AlarmBodyPreview() {
+private fun AlarmBodyPreview() {
 
     val alarmCalender = Calendar.getInstance().apply {
         set(0, 0, 0, 20, 25, 11)

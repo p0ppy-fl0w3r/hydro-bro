@@ -13,7 +13,6 @@ import com.fl0w3r.core.hydro.ui.alarm.info.AlarmInfoScreen
 import com.fl0w3r.core.hydro.ui.overview.OverviewScreen
 import com.fl0w3r.core.hydro.ui.profile.ProfileScreen
 import com.fl0w3r.user.ui.login.LoginScreen
-import com.fl0w3r.user.ui.signup.SignUpPreview
 import com.fl0w3r.user.ui.signup.SignupScreen
 
 
