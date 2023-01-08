@@ -33,3 +33,10 @@ Don't have an account? No problem!! We've got you covered. You can register by c
 > ❗Please note that signing up will require an active internet connection.
 
 !["Sign-up"](images/signup.jpg "Sign-up")
+
+## Using pre-seeded data
+
+Don't want to register but still want to use the app? User the following credentials to login to see some pre-seeded alarms.
+
+Username: test
+Password: Mypassword1!
