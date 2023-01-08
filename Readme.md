@@ -6,7 +6,7 @@ Drinking water companion app for all the hydro bros out there!!
 
 ## Login
 
-If you've got an account, you my login using your credentials at the login screen. This will allow you to access all the features provided by the application. 
+If you've got an account, you may login using your credentials at the login screen. This will allow you to access all the features provided by the application. 
 
 > ❗Please note that logging in will require an active internet connection.
 
