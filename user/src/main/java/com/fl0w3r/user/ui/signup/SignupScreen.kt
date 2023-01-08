@@ -203,18 +203,18 @@ fun SignupForm(
         InputField(
             value = signupState.age?.toString() ?: "",
             onValueChange = {
-                onStateChange(it.toIntOrNull()?.let { ageNum ->
+                onStateChange(
                     signupState.copy(
-                        age = ageNum
+                        age = it.toIntOrNull()
                     )
-                } ?: signupState)
+                )
             },
             label = "Age",
             placeholder = "Enter your age...",
             error = signupErrorState.ageError,
             keyboardType = KeyboardType.Number
         )
-        // TODO Mask password.
+
         InputField(
             value = signupState.password,
             onValueChange = {
