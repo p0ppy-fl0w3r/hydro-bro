@@ -14,6 +14,7 @@ import com.fl0w3r.user.ui.login.state.TokenValid
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -79,9 +80,18 @@ class LoginViewModel @Inject constructor(
 
                 hydroPreferenceRepository.updateToken(userResponse.token)
 
+            } catch (e: HttpException) {
+                _tokenState.value = TokenState(
+                    validity = TokenValid.INVALID,
+                    token = "",
+                    errorMessage = e.response()?.errorBody()?.string().toString()
+                )
+
             } catch (e: Exception) {
                 _tokenState.value = TokenState(
-                    validity = TokenValid.INVALID, token = "", errorMessage = e.message.toString()
+                    validity = TokenValid.INVALID,
+                    token = "",
+                    errorMessage = "Unable to login right now :("
                 )
             }
         }

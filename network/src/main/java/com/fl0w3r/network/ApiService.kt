@@ -26,7 +26,7 @@ interface HydroApiService {
     suspend fun loginUser(@Body loginModel: LoginModel): UserResponse
 
     @POST("api/Auth/register")
-    suspend fun registerUser(@Body loginModel: RegisterModel): UserResponse
+    suspend fun registerUser(@Body loginModel: RegisterModel)
 
     @GET("api/Auth/verify")
     suspend fun isTokenValid(@Header("Authorization") token: String): Boolean

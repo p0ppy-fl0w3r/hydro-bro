@@ -10,10 +10,22 @@ data class SignupState(
 )
 
 data class SignupErrorState(
-    val usernameError: String = "",
-    val firstNameError: String = "",
-    val lastNameError: String = "",
-    val ageError: String = "",
-    val emailError: String = "",
-    val passwordError: String = ""
+    var usernameError: String = "",
+    var firstNameError: String = "",
+    var lastNameError: String = "",
+    var ageError: String = "",
+    var emailError: String = "",
+    var passwordError: String = ""
 )
+
+data class SignupApiState(
+    val status: ApiStatus,
+    val message: String
+)
+
+enum class ApiStatus {
+    INITIAL,
+    PENDING,
+    SUCCESS,
+    FAILED
+}

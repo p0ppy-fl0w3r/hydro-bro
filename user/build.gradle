@@ -87,4 +87,7 @@ dependencies {
     kapt "androidx.room:room-compiler:2.4.3"
     implementation "androidx.room:room-ktx:2.4.3"
 
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+
+
 }
