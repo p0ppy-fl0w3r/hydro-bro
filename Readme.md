@@ -36,7 +36,7 @@ Don't have an account? No problem!! We've got you covered. You can register by c
 
 ## Using pre-seeded data
 
-Don't want to register but still want to use the app? User the following credentials to login to see some pre-seeded alarms.
+Don't want to register but still want to use the app? Use the following credentials to login and see some pre-seeded alarms.
 
 Username: test
 
