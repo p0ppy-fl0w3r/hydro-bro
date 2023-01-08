@@ -6,7 +6,7 @@ Drinking water companion app for all the hydro bros out there!!
 
 ## Login
 
-If you've got an account, you my login using your credentials at the login screen. This will allow you to access all the features provided by the application. 
+If you've got an account, you may login using your credentials at the login screen. This will allow you to access all the features provided by the application. 
 
 > ❗Please note that logging in will require an active internet connection.
 
@@ -33,3 +33,11 @@ Don't have an account? No problem!! We've got you covered. You can register by c
 > ❗Please note that signing up will require an active internet connection.
 
 !["Sign-up"](images/signup.jpg "Sign-up")
+
+## Using pre-seeded data
+
+Don't want to register but still want to use the app? Use the following credentials to login and see some pre-seeded alarms.
+
+Username: test
+
+Password: Mypassword1!
