@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
@@ -99,7 +101,10 @@ fun SignupBody(
     isPending: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
+    Column(
+        modifier
+            .fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween
+    ) {
         Box {
             DecorationBox()
 
@@ -110,11 +115,16 @@ fun SignupBody(
 
         Spacer(modifier = Modifier.height(50.dp))
 
-        SignupForm(onSignupClicked = {
-            onSignupClicked(it)
-        }, signupState = signupState, signupErrorState = signupErrorState, onStateChange = {
-            onStateChange(it)
-        }, isPending = isPending)
+        SignupForm(
+            onSignupClicked = {
+                onSignupClicked(it)
+            }, signupState = signupState,
+            signupErrorState = signupErrorState,
+            onStateChange = {
+                onStateChange(it)
+            }, isPending = isPending,
+            modifier = Modifier.verticalScroll(rememberScrollState())
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 

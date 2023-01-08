@@ -92,5 +92,8 @@ dependencies {
     // Accompanist
     implementation 'com.google.accompanist:accompanist-permissions:0.28.0'
 
+    // Coil for image
+    implementation "io.coil-kt:coil-compose:2.2.2"
+
 
 }

@@ -79,7 +79,7 @@ fun AlarmBody(
     onAlarmClicked: (Int) -> Unit
 ) {
     val notificationPermissionState =
-        rememberPermissionState(permission = if (Build.VERSION.SDK_INT == VERSION_CODES.TIRAMISU) Manifest.permission.POST_NOTIFICATIONS else "")
+        rememberPermissionState(permission = if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) Manifest.permission.POST_NOTIFICATIONS else "")
 
 
     var showDialog by remember {
@@ -89,10 +89,14 @@ fun AlarmBody(
     Column(modifier = modifier.fillMaxSize()) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
             IconButton(onClick = {
-                if (notificationPermissionState.status.isGranted) {
-                    showDialog = true
+                if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU) {
+                    if (notificationPermissionState.status.isGranted) {
+                        showDialog = true
+                    } else {
+                        notificationPermissionState.launchPermissionRequest()
+                    }
                 } else {
-                    notificationPermissionState.launchPermissionRequest()
+                    showDialog = true
                 }
             }) {
                 Icon(imageVector = Icons.Default.AlarmAdd, contentDescription = "Add new alarm")
